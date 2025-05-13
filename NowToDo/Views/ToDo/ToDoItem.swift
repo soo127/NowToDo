@@ -11,7 +11,8 @@ struct ToDoItem: Identifiable, Codable {
 
     var id = UUID()
     var text: String = ""
-    var date: Date = Date()
+    var dueDate: Date?
+    var createdAt = Date()
 
 }
 

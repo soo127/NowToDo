@@ -10,9 +10,9 @@ import SwiftUI
 struct ToDoCell: View {
 
     @Binding var text: String
-    @Binding var dueDate: Date
+    @Binding var dueDate: Date?
     @State private var clicked: Bool = false
-    @State var dateAdded: Bool = false
+    @State var showDate: Bool = false
     var clickAction: () -> Void
 
     var body: some View {
@@ -26,11 +26,10 @@ struct ToDoCell: View {
                     .foregroundStyle(clicked ? .gray : .primary)
 
                 DueDatePicker(
-                    dateAdded: $dateAdded,
                     dueDate: $dueDate
                 )
             }
-            .padding(.bottom)
+            .padding(.vertical, 5)
 
             Divider()
         }

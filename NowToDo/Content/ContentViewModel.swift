@@ -14,6 +14,33 @@ class ContentViewModel: ObservableObject {
             save()
         }
     }
+    @Published var sortMode: SortMode = .creationDate {
+        didSet {
+            if sortMode == .creationDate {
+                items.sort { $0.createdAt < $1.createdAt }
+            } else { // sortMode == .dueDate
+                items.sort {
+                    switch ($0.dueDate, $1.dueDate) {
+                        case let (d1?, d2?):
+                            if d1 == d2 {
+                                return $0.createdAt < $1.createdAt
+                            } else {
+                                return d1 < d2
+                            }
+
+                        case (.none, .none):
+                            return $0.createdAt < $1.createdAt
+
+                        case (.none, .some):
+                            return false
+
+                        case (.some, .none):
+                            return true
+                        }
+                }
+            }
+        }
+    }
     private var timer: Timer?
     private var idsForRemoving: Set<UUID> = .init()
     private let key = "items"
