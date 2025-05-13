@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct NowToDoApp: App {
+
     var body: some Scene {
         WindowGroup {
             ContentView()
         }
     }
+    
 }
