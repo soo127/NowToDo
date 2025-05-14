@@ -12,7 +12,7 @@ struct ToDoCell: View {
     @Binding var text: String
     @Binding var dueDate: Date?
     @State private var clicked: Bool = false
-    @State var showDate: Bool = false
+    
     var clickAction: () -> Void
 
     var body: some View {
@@ -40,5 +40,5 @@ struct ToDoCell: View {
 }
 
 #Preview {
-    ToDoCell(text: .constant("테스트"), dueDate: .constant(Date()), clickAction: {})
+    ToDoCell(text: .constant("테스트"), dueDate: .constant(nil), clickAction: {})
 }

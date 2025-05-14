@@ -11,7 +11,6 @@ extension ToDoCell {
 
     struct DueDatePicker: View {
 
-        //@Binding var showDate: Bool
         @Binding var dueDate: Date?
         private var today: Date {
             Calendar.current.startOfDay(for: Date())
@@ -39,11 +38,10 @@ extension ToDoCell {
 
             } else {
 
-                    Button("일정 추가") {
-                        //showDate = true
-                        dueDate = today
-                    }
-                    .font(.footnote)
+                Button("일정 추가") {
+                    dueDate = today
+                }
+                .font(.footnote)
 
             }
 
