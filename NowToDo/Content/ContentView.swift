@@ -14,29 +14,32 @@ struct ContentView: View {
 
         NavigationStack {
 
-            ScrollView {
-                ForEach($viewModel.items) { item in
-                    ToDoCell(
-                        text: item.text,
-                        dueDate: item.dueDate,
-                        clickAction: {
-                            viewModel.toggleRemoval(for: item.id)
-                        }
-                    )
-                }
+            VStack {
+
+                ToDoCellView(
+                    items: $viewModel.items,
+                    onClick: { id in
+                        viewModel.toggleCompletion(for: id)
+                    }
+                )
+                FooterView()
+                    .onTapGesture {
+                        viewModel.append()
+                    }
+
             }
             .navigationTitle(Text("미리 알림"))
-            .padding(.top, 10)
-            .navigationBarItems(trailing:
+            .toolbar {
                 MenuView(alignMode: $viewModel.alignMode) {
-                    action in viewModel.handleMenu(onAction: action)
+                    action in viewModel.handle(action: action)
                 }
-            )
+            }
 
-            FooterView()
-                .onTapGesture {
-                    viewModel.append()
-                }
+        }
+        .fullScreenCover(isPresented: $viewModel.showCompleted) {
+            DoneCellView(completedItems: viewModel.completedItems) {
+                action in viewModel.handle(action : action)
+            }
 
         }
     }

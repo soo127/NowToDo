@@ -13,6 +13,7 @@ struct ToDoItem: Identifiable, Codable {
     var text: String = ""
     var dueDate: Date?
     var createdAt = Date()
+    var completedAt: Date?
 
 }
 
