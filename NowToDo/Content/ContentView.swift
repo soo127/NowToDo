@@ -16,15 +16,9 @@ struct ContentView: View {
 
             VStack {
 
-                ToDoCellView(
-                    items: $viewModel.items,
-                    onClick: { id in
-                        viewModel.toggleCompletion(for: id)
-                    },
-                    remove: { id in
-                        viewModel.remove(for: id)
-                    }
-                )
+                ToDoCellView(items: $viewModel.items) {
+                    action in viewModel.handle(action: action)
+                }
                 FooterView()
                     .onTapGesture {
                         viewModel.append()

@@ -48,8 +48,8 @@ struct ToDoCell: View {
             .listRowSeparator(.hidden)
         ToDoCell(text: .constant("테스트"), dueDate: .constant(Date()), clickAction: {})
             .listRowSeparator(.hidden)
-        ToDoCell(text: .constant("테스트"), dueDate: .constant(Date()), clickAction: {})
-            .listRowSeparator(.hidden)
+        ToDoCell(text: .constant("테스트"), dueDate: .constant(nil), clickAction: {})
+
     }
     
     .listStyle(.plain)

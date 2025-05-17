@@ -37,7 +37,24 @@ class ContentViewModel: ObservableObject {
         load()
     }
 
-    func sort() {
+    // MARK: - Action in Menu
+
+    func handle(action: MenuAction) {
+
+        switch action {
+
+        case .alignByCreationDate:
+            alignMode = .creationDate
+        case .alignByDueDate:
+            alignMode = .dueDate
+        case .showCompleted:
+            showCompleted = true
+
+        }
+
+    }
+
+    private func sort() {
         if alignMode == .creationDate {
             items.sort { $0.createdAt < $1.createdAt }
 
@@ -60,29 +77,16 @@ class ContentViewModel: ObservableObject {
 
                 case (.some, .none):
                     return true
-
                 }
             }
         }
     }
 
-    func handle(action: MenuAction) {
-
-        switch action {
-
-        case .alignByCreationDate:
-            alignMode = .creationDate
-        case .alignByDueDate:
-            alignMode = .dueDate
-        case .alarm:
-            print("미완성")
-        case .delete:
-            print("미완성")
-        case .showCompleted:
-            showCompleted = true
-
-        }
+    func append() {
+        items.append(.empty)
     }
+
+    // MARK: - Action in DoneCell
 
     func handle(action: DoneCellViewAction) {
 
@@ -96,32 +100,10 @@ class ContentViewModel: ObservableObject {
             remove()
 
         }
+
     }
 
-    func append() {
-        items.append(.empty)
-    }
-
-    func reserveCompletion() {
-        timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { [weak self] _ in
-            guard let self = self else { return }
-            Task { @MainActor in
-                self.moveToCompletedItems(ids: self.idsCompletedSoon)
-                self.idsCompletedSoon.removeAll()
-            }
-        }
-    }
-
-    func remove(for id: UUID) {
-        items.remove(at: items.firstIndex(where: {$0.id == id})!)
-    }
-
-    func remove() {
-        completedItems.removeAll { idsForRemovingDone.contains($0.id) }
-    }
-
-    func toggleRemoveForDone(for id: UUID) {
+    private func toggleRemoveForDone(for id: UUID) {
         if idsForRemovingDone.contains(id) {
             idsForRemovingDone.remove(id)
         } else {
@@ -129,7 +111,63 @@ class ContentViewModel: ObservableObject {
         }
     }
 
-    func toggleCompletion(for id: UUID) {
+    private func remove() {
+        completedItems.removeAll { idsForRemovingDone.contains($0.id) }
+    }
+
+    // MARK: - Action in ToDoCell
+
+    func handle(action: ToDoCellViewAction) {
+
+        switch action {
+
+        case .notify(let item, let dayBefore):
+            requestScheduleNotification(for: item, dayBefore: dayBefore)
+        case .onClick(let id):
+            toggleCompletion(for: id)
+        case .remove(let id):
+            remove(for: id)
+
+        }
+
+    }
+
+    private func requestScheduleNotification(for item: ToDoItem, dayBefore: Int) {
+
+        guard let dueDate = item.dueDate else {
+            print("dueDate 없음.")
+            return
+        }
+        print("알람 드릴게요!!")
+
+        let content = UNMutableNotificationContent()
+        content.title = "곧 마감되는 ToDo가 있어요"
+        content.body = item.text
+        content.sound = .default
+
+//        let trigger = UNTimeIntervalNotificationTrigger(
+//            timeInterval: 5,
+//            repeats: false
+//        )
+
+        let nDayBefore = Calendar.current.date(byAdding: .day, value: -1 * dayBefore, to: dueDate)!
+        let components = Calendar.current.dateComponents([.year, .month, .day], from: nDayBefore)
+        let trigger = UNCalendarNotificationTrigger(
+            dateMatching: components,
+            repeats: false
+        )
+
+        let request = UNNotificationRequest(
+            identifier: item.id.uuidString,
+            content: content,
+            trigger: trigger
+        )
+
+        UNUserNotificationCenter.current().add(request)
+
+    }
+
+    private func toggleCompletion(for id: UUID) {
         guard let index = items.firstIndex(where: { $0.id == id }) else { return }
         if idsCompletedSoon.contains(id) {
             idsCompletedSoon.remove(id)
@@ -141,11 +179,28 @@ class ContentViewModel: ObservableObject {
         reserveCompletion()
     }
 
+    private func reserveCompletion() {
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { [weak self] _ in
+            guard let self = self else { return }
+            Task { @MainActor in
+                self.moveToCompletedItems(ids: self.idsCompletedSoon)
+                self.idsCompletedSoon.removeAll()
+            }
+        }
+    }
+
     private func moveToCompletedItems(ids: Set<UUID>) {
         let completed = items.filter { ids.contains($0.id) }
         completedItems.append(contentsOf: completed)
         items.removeAll { ids.contains($0.id) }
     }
+
+    private func remove(for id: UUID) {
+        items.remove(at: items.firstIndex(where: {$0.id == id})!)
+    }
+
+    // MARK: - UserDefaults
 
     private func saveItems() {
         if let data = try? JSONEncoder().encode(items) {

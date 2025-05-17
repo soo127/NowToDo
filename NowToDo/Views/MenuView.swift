@@ -20,31 +20,31 @@ struct MenuView: View {
                 onAction(.showCompleted)
             }
 
-            Button("알림 설정") {
-                onAction(.alarm)
-            }
-
             Menu("정렬") {
 
                 Button {
                     onAction(.alignByCreationDate)
                 } label: {
-                    Label(
-                        "먼저 추가한 순",
-                        systemImage: alignMode == .creationDate ? "checkmark" : ""
-                    )
+                    HStack {
+                        Text("먼저 추가한 순")
+                        if alignMode == .creationDate {
+                            Spacer()
+                            Image(systemName: "checkmark")
+                        }
+                    }
                 }
 
                 Button {
                     onAction(.alignByDueDate)
                 } label: {
-                    Label(
-                        "마감이 빠른 순",
-                        systemImage: alignMode == .dueDate ? "checkmark" : ""
-                    )
+                    HStack {
+                        Text("마감이 빠른 순")
+                        if alignMode == .dueDate {
+                            Spacer()
+                            Image(systemName: "checkmark")
+                        }
+                    }
                 }
-
-                
 
             }
 

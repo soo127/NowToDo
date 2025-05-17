@@ -7,6 +7,14 @@
 
 import SwiftUI
 
+enum ToDoCellViewAction {
+
+    case onClick(UUID)
+    case remove(UUID)
+    case notify(ToDoItem, Int)
+
+}
+
 enum DoneCellViewAction {
 
     case onDismiss
@@ -19,8 +27,6 @@ enum MenuAction {
 
     case alignByCreationDate
     case alignByDueDate
-    case delete
-    case alarm
     case showCompleted
 
 }

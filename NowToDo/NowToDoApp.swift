@@ -6,11 +6,19 @@
 //
 
 import SwiftUI
+import UserNotifications
 
 @main
 struct NowToDoApp: App {
 
     init() {
+
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
+            if let error {
+                print("ERROR in requesting authorization: \(error)")
+            }
+        }
+
       // Large Navigation Title
         UINavigationBar.appearance().largeTitleTextAttributes = [.foregroundColor: UIColor.orange]
       // Inline Navigation Title
