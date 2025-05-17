@@ -20,6 +20,9 @@ struct ContentView: View {
                     items: $viewModel.items,
                     onClick: { id in
                         viewModel.toggleCompletion(for: id)
+                    },
+                    remove: { id in
+                        viewModel.remove(for: id)
                     }
                 )
                 FooterView()

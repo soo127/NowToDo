@@ -42,6 +42,8 @@ extension ToDoCell {
                     dueDate = today
                 }
                 .font(.footnote)
+                .foregroundStyle(.blue)
+                .buttonStyle(PlainButtonStyle())
 
             }
 

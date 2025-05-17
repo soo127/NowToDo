@@ -15,13 +15,9 @@ struct MenuView: View {
     var body: some View {
 
         Menu {
-            
+
             Button("완료된 항목 보기") {
                 onAction(.showCompleted)
-            }
-
-            Button("삭제") {
-                onAction(.delete)
             }
 
             Button("알림 설정") {
@@ -47,6 +43,8 @@ struct MenuView: View {
                         systemImage: alignMode == .dueDate ? "checkmark" : ""
                     )
                 }
+
+                
 
             }
 

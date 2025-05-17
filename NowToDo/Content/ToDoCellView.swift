@@ -11,45 +11,34 @@ struct ToDoCellView: View {
 
     @Binding var items: [ToDoItem]
     var onClick: (UUID) -> Void
-
+    var remove: (UUID) -> Void
     var body: some View {
 
-        ScrollView {
-            VStack {
-                ForEach($items) { item in
-                    ToDoCell(
-                        text: item.text,
-                        dueDate: item.dueDate,
-                        clickAction: {
-                            onClick(item.id)
-                            //viewModel.toggleCompletion(for: item.id)
-                        }
-                    )
+        List {
+            ForEach($items) { item in
+                ToDoCell(
+                    text: item.text,
+                    dueDate: item.dueDate,
+                    clickAction: {
+                        onClick(item.id)
+                    }
+                )
+                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                    Button(role: .destructive) {
+                        remove(item.id)
+                    } label: {
+                        Image(systemName: "trash")
+                    }
                 }
             }
-        }
-        .padding(.top, 10)
+            .listRowSeparator(.hidden)
 
+        }
+        .listStyle(.plain)
     }
 
 }
 
 #Preview {
-    ToDoCellView(items: .constant([]), onClick: {_ in })
+    ToDoCellView(items: .constant([]), onClick: { _ in }, remove: { _ in })
 }
-
-
-//                ScrollView {
-//                    VStack {
-//                        ForEach($viewModel.items) { item in
-//                            ToDoCell(
-//                                text: item.text,
-//                                dueDate: item.dueDate,
-//                                clickAction: {
-//                                    viewModel.toggleCompletion(for: item.id)
-//                                }
-//                            )
-//                        }
-//                    }
-//                }
-//                .padding(.top, 10)

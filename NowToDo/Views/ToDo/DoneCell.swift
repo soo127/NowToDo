@@ -23,8 +23,6 @@ struct DoneCell: View {
             HStack(alignment: .top) {
 
                 CheckButton(clicked: $clicked, action: onClick)
-                    .frame(width: 24, height: 24)
-
 
                 Text(text)
                     .foregroundStyle(.gray)

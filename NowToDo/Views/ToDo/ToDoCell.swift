@@ -12,30 +12,47 @@ struct ToDoCell: View {
     @Binding var text: String
     @Binding var dueDate: Date?
     @State private var clicked: Bool = false
-    
     var clickAction: () -> Void
 
     var body: some View {
 
-        VStack {
+        HStack(alignment: .top) {
 
-            HStack(alignment: .top) {
-                CheckButton(clicked: $clicked, action: clickAction)
+            CheckButton(clicked: $clicked, action: clickAction)
+                .buttonStyle(PlainButtonStyle())
 
-                TextField("할 일 추가", text: $text, axis: .vertical)
-                    .foregroundStyle(clicked ? .gray : .primary)
+            VStack {
 
-                DueDatePicker(
-                    dueDate: $dueDate
-                )
+                HStack(alignment: .top) {
+                    TextField("할 일 추가", text: $text, axis: .vertical)
+                        .foregroundStyle(clicked ? .gray : .primary)
+
+                    DueDatePicker(
+                        dueDate: $dueDate
+                    )
+                }
+                Divider()
+                    .padding(.top, 5)
+
             }
-            .padding(.vertical, 5)
 
-            Divider()
         }
-        .padding(.horizontal)
 
     }
+
+}
+
+#Preview {
+    List {
+        ToDoCell(text: .constant("테스트"), dueDate: .constant(Date()), clickAction: {})
+            .listRowSeparator(.hidden)
+        ToDoCell(text: .constant("테스트"), dueDate: .constant(Date()), clickAction: {})
+            .listRowSeparator(.hidden)
+        ToDoCell(text: .constant("테스트"), dueDate: .constant(Date()), clickAction: {})
+            .listRowSeparator(.hidden)
+    }
+    
+    .listStyle(.plain)
 
 }
 

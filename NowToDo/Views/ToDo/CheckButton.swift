@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 struct CheckButton: View {
 
     @Binding var clicked: Bool
@@ -34,10 +33,12 @@ struct CheckButton: View {
                         }
                     }
                 )
+
         }
 
     }
 
 }
+
 
 

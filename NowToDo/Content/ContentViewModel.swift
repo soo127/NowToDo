@@ -113,6 +113,10 @@ class ContentViewModel: ObservableObject {
         }
     }
 
+    func remove(for id: UUID) {
+        items.remove(at: items.firstIndex(where: {$0.id == id})!)
+    }
+
     func remove() {
         completedItems.removeAll { idsForRemovingDone.contains($0.id) }
     }
@@ -123,10 +127,6 @@ class ContentViewModel: ObservableObject {
         } else {
             idsForRemovingDone.insert(id)
         }
-    }
-
-    func toggleRemoveForToDo(for id: UUID) {
-
     }
 
     func toggleCompletion(for id: UUID) {

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct DoneCellView: View {
 
+    @State var deleteConfirm: Bool = false
     var completedItems: [ToDoItem]
     var action: (DoneCellViewAction) -> Void
 
@@ -31,8 +32,15 @@ struct DoneCellView: View {
                 .padding(.top, 10)
 
                 Button("삭제") {
-                    action(.onRemove)
+                    deleteConfirm = true
                 }
+                .alert("정말 삭제하시겠습니까?", isPresented: $deleteConfirm) {
+                    Button("삭제", role: .destructive) {
+                        action(.onRemove)
+                    }
+                    Button("취소", role: .cancel) { }
+                }
+
             }
             .navigationTitle(Text("완료된 항목"))
             .toolbar {
