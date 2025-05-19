@@ -20,7 +20,7 @@ struct CheckButton: View {
         } label: {
             Circle()
                 .fill(.white)
-                .frame(width: 30, height: 30)
+                .frame(width: 28, height: 28)
                 .overlay(
                     Circle().stroke(clicked ? .orange : .gray, lineWidth: 2)
                 )
@@ -29,12 +29,13 @@ struct CheckButton: View {
                         if clicked {
                             Circle()
                                 .fill(.orange)
-                                .frame(width: 24, height: 24)
+                                .frame(width: 22, height: 22)
                         }
                     }
                 )
 
         }
+        .buttonStyle(PlainButtonStyle())
 
     }
 

@@ -10,8 +10,8 @@ import SwiftUI
 struct ToDoCell: View {
 
     @Binding var text: String
-    @Binding var dueDate: Date?
     @State private var clicked: Bool = false
+    let dueDate: Date?
     var clickAction: () -> Void
 
     var body: some View {
@@ -19,42 +19,54 @@ struct ToDoCell: View {
         HStack(alignment: .top) {
 
             CheckButton(clicked: $clicked, action: clickAction)
-                .buttonStyle(PlainButtonStyle())
 
-            VStack {
-                HStack(alignment: .top) {
-                    
-                    TextField("할 일 추가", text: $text, axis: .vertical)
-                        .foregroundStyle(clicked ? .gray : .primary)
+            Text("") // spacer for height alignment
+                .frame(height: 40)
 
-                    DueDatePicker(
-                        dueDate: $dueDate
-                    )
+            ZStack(alignment: .topTrailing) {
+
+                TextField("할 일 추가", text: $text, axis: .vertical)
+                    .foregroundStyle(clicked ? .gray : .primary)
+                    .padding(.trailing, 40) // 오른쪽 공간 확보
+
+                if let dDay = dDay(), let color = dateColor() {
+                    Text("D\(color == .red ? "+" : "-")\(abs(dDay))")
+                        .foregroundStyle(color)
+                        .padding(.top, 8)
+                        .padding(.trailing, 4)
                 }
-                Divider()
-                    .padding(.top, 5)
+
             }
 
         }
+        .listRowSeparator(.visible)
 
     }
 
-}
-
-#Preview {
-    List {
-        ToDoCell(text: .constant("테스트"), dueDate: .constant(Date()), clickAction: {})
-            .listRowSeparator(.hidden)
-        ToDoCell(text: .constant("테스트"), dueDate: .constant(Date()), clickAction: {})
-            .listRowSeparator(.hidden)
-        ToDoCell(text: .constant("테스트"), dueDate: .constant(nil), clickAction: {})
-
+    private var today: Date {
+        Calendar.current.startOfDay(for: Date())
     }
-    
-    .listStyle(.plain)
+    private var now: Date {
+        Date()
+    }
 
-}
+    private func dDay() -> Int? {
+        guard let dueDate = dueDate else { return nil }
 
-#Preview {
-    ToDoCell(text: .constant("테스트"), dueDate: .constant(nil), clickAction: {})
+        let components = Calendar.current.dateComponents([.day], from: now, to: dueDate)
+        return components.day
+    }
+
+    private func dateColor() -> Color? {
+        guard let dueDate = dueDate else { return nil }
+
+        if now > dueDate {
+            return .red
+        } else if Calendar.current.isDate(now, inSameDayAs: dueDate) {
+            return .orange
+        } else {
+            return .green
+        }
+    }
+
 }

@@ -133,6 +133,8 @@ class ContentViewModel: ObservableObject {
             remove(for: id)
         case .cancel(let id):
             cancel(for: id)
+        case .removeDueDate(let id):
+            removeDueDate(for: id)
 
         }
 
@@ -217,6 +219,11 @@ class ContentViewModel: ObservableObject {
         items[index].dayAfter = -1
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [id.uuidString])
         print("알림이 취소되었어요.")
+    }
+
+    private func removeDueDate(for id: UUID) {
+        guard let index = itemIndex(of: id) else { return }
+        items[index].dueDate = nil
     }
 
     // MARK: - UserDefaults

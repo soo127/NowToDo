@@ -13,6 +13,8 @@ enum ToDoCellViewAction {
     case remove(UUID)
     case notify(Int, Int)
     case cancel(UUID)
+    case removeDueDate(UUID)
+
 }
 
 enum DoneCellViewAction {
@@ -35,5 +37,18 @@ enum AlignMode {
 
     case creationDate
     case dueDate
+
+}
+
+enum SheetType: Identifiable {
+
+    case alarm(UUID)
+    case dueDate(UUID)
+    var id: UUID {
+        switch self {
+        case .alarm(let id), .dueDate(let id):
+            return id
+        }
+    }
 
 }
