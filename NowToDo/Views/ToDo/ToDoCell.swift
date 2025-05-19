@@ -22,8 +22,8 @@ struct ToDoCell: View {
                 .buttonStyle(PlainButtonStyle())
 
             VStack {
-
                 HStack(alignment: .top) {
+                    
                     TextField("할 일 추가", text: $text, axis: .vertical)
                         .foregroundStyle(clicked ? .gray : .primary)
 
@@ -33,7 +33,6 @@ struct ToDoCell: View {
                 }
                 Divider()
                     .padding(.top, 5)
-
             }
 
         }

@@ -3,22 +3,22 @@
 //  NowToDo
 //
 //  Created by 이상수 on 5/15/25.
+// 알람이 있을 때는 며칠 뒤 알람인지 알려줄 수 있으면 좋음.
+// 알람 설정할 때 시간 단위도 고려.
 
 import SwiftUI
 
 struct ToDoCellView: View {
 
     @Binding var items: [ToDoItem]
-    @State var showAlert: Bool = false
-    @State var dayBefore: Int = 1
-    @State var selectedItem: ToDoItem? = nil
+    @State private var selectedItemID: UUID? = nil
+    @State private var isPresented: Bool = false
+    @State private var showAlert: Bool = false
     var action: (ToDoCellViewAction) -> Void
 
     var body: some View {
-
         List {
             ForEach($items) { item in
-
                 ToDoCell(
                     text: item.text,
                     dueDate: item.dueDate,
@@ -32,34 +32,46 @@ struct ToDoCellView: View {
                         Image(systemName: "trash")
                     }
 
+                    let dayAfter = item.dayAfter.wrappedValue
                     Button {
-                        guard let _ = item.wrappedValue.dueDate else {
-                            showAlert = true
-                            return
+                        if dayAfter > 0 {
+                            action(.cancel(item.id))
+                        } else {
+                            selectedItemID = item.id
+                            isPresented = true
                         }
-                        selectedItem = item.wrappedValue
                     } label: {
-                        VStack {
-                            Image(systemName: "bell")
-                            Text("마감 \(dayBefore)일 전 알람")
-                        }
+                        dayAfter > 0 ? Image(systemName: "bell") : Image(systemName: "bell.slash")
                     }
                     .tint(.blue)
-                }
 
+                }
             }
             .listRowSeparator(.hidden)
         }
-        .alert("마감일이 없습니다.\n일정을 먼저 설정해주세요.", isPresented: $showAlert) {
+        .alert("마감일 이후에 알람을 설정할 수 없습니다.", isPresented: $showAlert) {
             Button("확인", role: .cancel) { }
         }
-        .sheet(item: $selectedItem) { item in
-            AlarmPickerView(dayBefore: $dayBefore) {
-                action(.notify(item, dayBefore))
-                selectedItem = nil
+        .sheet(isPresented: $isPresented) {
+            AlarmPickerView { dayAfter in
+                tryNotification(dayAfter: dayAfter)
             }
         }
         .listStyle(.plain)
+    }
+
+    private func tryNotification(dayAfter: Int){
+        guard let id = selectedItemID, let index = items.firstIndex(where: { $0.id == id }) else { return }
+        guard let alarmDate = Calendar.current.date(byAdding: .day, value: dayAfter, to: Date()) else { return }
+
+        if let dueDate = items[index].dueDate, alarmDate > dueDate  {
+            print(alarmDate, dueDate)
+            showAlert = true
+        } else {
+            action(.notify(index, dayAfter))
+            isPresented = false
+        }
+        return
     }
 
 }

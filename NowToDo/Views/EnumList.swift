@@ -11,8 +11,8 @@ enum ToDoCellViewAction {
 
     case onClick(UUID)
     case remove(UUID)
-    case notify(ToDoItem, Int)
-
+    case notify(Int, Int)
+    case cancel(UUID)
 }
 
 enum DoneCellViewAction {

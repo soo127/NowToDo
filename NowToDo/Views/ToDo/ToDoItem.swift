@@ -14,6 +14,7 @@ struct ToDoItem: Identifiable, Codable {
     var dueDate: Date?
     var createdAt = Date()
     var completedAt: Date?
+    var dayAfter: Int = -1
 
 }
 

@@ -25,30 +25,28 @@ extension ToDoCell {
 
                 if dueDate != nil {
 
+                    Text(dDay() >= 0 ? "D-\(dDay())" : "D+\(abs(dDay()))")
+                        .foregroundStyle(dateColor())
 
-                        Text(dDay() >= 0 ? "D-\(dDay())" : "D+\(abs(dDay()))")
-                            .foregroundStyle(dateColor())
-
-                        DatePicker("",
-                                   selection: Binding(
-                                    get: { dueDate ?? Date() },
-                                    set: { dueDate = $0 }
-                                   ),
-                                   displayedComponents: .date
-                        )
+                    DatePicker(
+                        "",
+                        selection: Binding(
+                            get: { dueDate ?? Date() },
+                            set: { dueDate = $0 }
+                        ),
+                        displayedComponents: [.date]
+                    )
 
                 } else {
 
-                        Spacer()
+                    Spacer()
 
-                        Button("일정 추가") {
-                            dueDate = today
-                        }
-                        .font(.footnote)
-                        .foregroundStyle(.blue)
-                        .buttonStyle(PlainButtonStyle())
+                    Button("일정 추가") {
+                        dueDate = today
                     }
-
+                    .foregroundStyle(.blue)
+                    .buttonStyle(PlainButtonStyle())
+                }
 
             }
 
@@ -72,36 +70,3 @@ extension ToDoCell {
     }
 
 }
-
-
-
-//
-//if dueDate != nil {
-//
-//    VStack(alignment: .trailing) {
-//        Text(dDay() >= 0 ? "D-\(dDay())" : "D+\(abs(dDay()))")
-//            .foregroundStyle(dateColor())
-//
-//        DatePicker("",
-//                   selection: Binding(
-//                    get: { dueDate ?? Date() },
-//                    set: { dueDate = $0 }
-//                   ),
-//                   displayedComponents: .date
-//        )
-//        .datePickerStyle(.compact)
-//    }
-//
-//} else {
-//    VStack {
-//        Spacer()
-//
-//        Button("일정 추가") {
-//            dueDate = today
-//        }
-//        .font(.footnote)
-//        .foregroundStyle(.blue)
-//        .buttonStyle(PlainButtonStyle())
-//    }
-//
-//}

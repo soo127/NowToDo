@@ -11,25 +11,25 @@ extension ToDoCellView {
 
     struct AlarmPickerView: View {
 
-        @Binding var dayBefore: Int
-        var action: () -> Void
+        @State private var dayAfter: Int = 1
+        var onComplete: (Int) -> Void
 
         var body: some View {
             VStack {
-                Text("마감 며칠 전에 알람을 받을까요?")
+                Text("며칠 후에 알림을 받을까요?")
                     .font(.headline)
                     .padding()
 
-                Picker("알람 시점", selection: $dayBefore) {
+                Picker("알림 시점", selection: $dayAfter) {
                     ForEach(1...30, id: \.self) { day in
-                        Text("\(day)일 전").tag(day)
+                        Text("\(day)일 후").tag(day)
                     }
                 }
                 .pickerStyle(.wheel)
                 .frame(maxHeight: 150)
 
                 Button("완료") {
-                    action()
+                    onComplete(dayAfter)
                 }
                 .padding()
             }
