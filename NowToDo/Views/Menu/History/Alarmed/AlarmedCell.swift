@@ -1,19 +1,17 @@
 //
-//  DoneCell.swift
+//  AlarmedCell.swift
 //  NowToDo
 //
-//  Created by 이상수 on 5/14/25.
+//  Created by 이상수 on 5/21/25.
 //
 
 import SwiftUI
 
-struct DoneCell: View {
+struct AlarmedCell: View {
 
-    var text: String
-    var dueDate: Date?
-    var completedAt: Date?
     @State private var clicked: Bool = false
-
+    var text: String
+    var alarmedDate: Date
     var onClick: () -> Void
 
     var body: some View {
@@ -29,7 +27,7 @@ struct DoneCell: View {
 
                 Spacer()
 
-                Text(completedAt!.formatted())
+                Text(alarmedDate.formatted())
                     .foregroundStyle(.gray)
 
             }
@@ -45,7 +43,7 @@ struct DoneCell: View {
 }
 
 #Preview {
-    DoneCell(text: "완료", dueDate: Date(), completedAt: Date(), onClick: {})
+    AlarmedCell(text: "울린 알림", alarmedDate: Date(), onClick: {})
 }
 
 

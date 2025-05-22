@@ -14,9 +14,14 @@ class ContentViewModel: ObservableObject {
             saveItems()
         }
     }
-    @Published var completedItems: [ToDoItem] = [] {
+    @Published var doneItems: [ToDoItem] = [] {
         didSet {
-            saveCompletedItems()
+            saveDoneItems()
+        }
+    }
+    @Published var alarmedItems: [ToDoItem] = [] {
+        didSet {
+            saveAlarmedItems()
         }
     }
     @Published var alignMode: AlignMode = .creationDate {
@@ -24,18 +29,17 @@ class ContentViewModel: ObservableObject {
             sort()
         }
     }
-    @Published var showCompleted: Bool = false
+    @Published var showDoneCells: Bool = false
+    @Published var showAlert: Bool = false
+    @Published var sheetType: SheetType? = nil
+    @Published var historyType: HistoryType? = nil
 
     private var timer: Timer?
-    private var idsCompletedSoon: Set<UUID> = .init()
-    private var idsForRemovingDone: Set<UUID> = .init()
-    private let key = "items"
-    private let key2 = "completedItems"
     private var now: Date { Date() }
-    private func itemIndex(of id: UUID) -> Int? {
-        guard let index = items.firstIndex(where: {$0.id == id}) else { return nil }
-        return index
-    }
+
+    private var idsDoneSoon: Set<UUID> = .init()
+    private var doneIds: Set<UUID> = .init()
+    private var alarmedIds: Set<UUID> = .init()
 
     init() {
         load()
@@ -43,38 +47,36 @@ class ContentViewModel: ObservableObject {
 
     // MARK: - Action in Menu
 
-    func handle(action: MenuAction) {
-
+    func handle(action: MenuType) {
         switch action {
-
         case .alignByCreationDate:
             alignMode = .creationDate
         case .alignByDueDate:
             alignMode = .dueDate
-        case .showCompleted:
-            showCompleted = true
-
+        case .showDoneCells:
+            historyType = .done
+        case .showSoundedAlarms:
+            historyType = .alarmed
         }
-
     }
 
     private func sort() {
         if alignMode == .creationDate {
-            items.sort { $0.createdAt < $1.createdAt }
+            items.sort { $0.createdDate < $1.createdDate }
 
-        } else { // sortMode == .dueDate
+        } else { // alignMode == .dueDate
             items.sort {
                 switch ($0.dueDate, $1.dueDate) {
 
                 case let (d1?, d2?):
                     if d1 == d2 {
-                        return $0.createdAt < $1.createdAt
+                        return $0.createdDate < $1.createdDate
                     } else {
                         return d1 < d2
                     }
 
                 case (.none, .none):
-                    return $0.createdAt < $1.createdAt
+                    return $0.createdDate < $1.createdDate
 
                 case (.none, .some):
                     return false
@@ -86,79 +88,116 @@ class ContentViewModel: ObservableObject {
         }
     }
 
-    func append() {
-        items.append(.empty)
+    func items(type: HistoryType) -> [ToDoItem] {
+        if type == .alarmed {
+            return alarmedItems
+        } else {
+            return doneItems
+        }
+    }
+
+    func handle(type: HistoryType, action: HistoryContainerAction) {
+        switch type {
+        case .alarmed:
+            handle(alarmedAction: action)
+        case .done:
+            handle(doneAction: action)
+        }
     }
 
     // MARK: - Action in DoneCell
 
-    func handle(action: DoneCellViewAction) {
+    func handle(doneAction: HistoryContainerAction) {
+        switch doneAction {
 
-        switch action {
-
-        case .onDismiss:
-            showCompleted = false
-        case .onClick(let id):
+        case .dismiss:
+            historyType = nil
+        case .click(let id):
             toggleRemoveForDone(for: id)
-        case .onRemove:
-            remove()
+        case .remove:
+            removeDone()
 
         }
-
     }
 
     private func toggleRemoveForDone(for id: UUID) {
-        if idsForRemovingDone.contains(id) {
-            idsForRemovingDone.remove(id)
+        if doneIds.contains(id) {
+            doneIds.remove(id)
         } else {
-            idsForRemovingDone.insert(id)
+            doneIds.insert(id)
         }
     }
 
-    private func remove() {
-        completedItems.removeAll { idsForRemovingDone.contains($0.id) }
+    private func removeDone() {
+        doneItems.removeAll { doneIds.contains($0.id) }
+    }
+
+    // MARK: - Action in AlarmedCell
+
+    func handle(alarmedAction: HistoryContainerAction) {
+        switch alarmedAction {
+
+        case .dismiss:
+            historyType = nil
+        case .click(let id):
+            toggleRemoveForAlarmed(for: id)
+        case .remove:
+            removeAlarmed()
+
+        }
+    }
+
+    private func toggleRemoveForAlarmed(for id: UUID) {
+        if alarmedIds.contains(id) {
+            alarmedIds.remove(id)
+        } else {
+            alarmedIds.insert(id)
+        }
+    }
+
+    private func removeAlarmed() {
+        alarmedItems.removeAll { alarmedIds.contains($0.id) }
     }
 
     // MARK: - Action in ToDoCell
 
-    func handle(action: ToDoCellViewAction) {
-
+    func handle(action: ToDoContainerAction) {
         switch action {
 
-        case .notify(let index, let dayAfter):
-            requestScheduleNotification(at: index, dayAfter: dayAfter)
-        case .onClick(let id):
-            toggleCompletion(for: id)
+        case .notify(let id, let alarmDate):
+            notify(for: id, alarmDate: alarmDate)
+        case .setDueDate(let id, let dueDate):
+            setDueDate(for: id, dueDate: dueDate)
+        case .click(let id):
+            toggleDone(for: id)
         case .remove(let id):
             remove(for: id)
-        case .cancel(let id):
-            cancel(for: id)
+        case .cancelAlarm(let id):
+            cancelAlarm(for: id)
         case .removeDueDate(let id):
             removeDueDate(for: id)
+        case .moveExpiredAlarms:
+            moveExpiredAlarms()
 
         }
-
     }
 
-    private func requestScheduleNotification(at index: Int, dayAfter: Int) {
+    private func notify(for id: UUID, alarmDate: Date) {
+        defer { sheetType = nil }
 
-        items[index].dayAfter = dayAfter
+        guard let index = items.firstIndex(where: { $0.id == id }) else {
+            return
+        }
+
+        cancelAlarm(for: id)
+        items[index].alarmDate = alarmDate
 
         let content = UNMutableNotificationContent()
         content.title = "Todo 알림"
         content.body = items[index].text
         content.sound = .default
 
-//        let trigger = UNTimeIntervalNotificationTrigger(
-//            timeInterval: 5,
-//            repeats: false
-//        )
-
-        let nDayAfter = Calendar.current.date(byAdding: .day, value: dayAfter, to: now)!
-        let components = Calendar.current.dateComponents([.year, .month, .day], from: nDayAfter)
-        print(now)
-        print(nDayAfter)
-        print(components)
+        let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: alarmDate)
         let trigger = UNCalendarNotificationTrigger(
             dateMatching: components,
             repeats: false
@@ -169,89 +208,146 @@ class ContentViewModel: ObservableObject {
             content: content,
             trigger: trigger
         )
-
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                print("알림 등록 실패: \(error)")
-            } else {
-                print("\(dayAfter)일 후 알림 등록 완료")
-            }
-        }
-
+        UNUserNotificationCenter.current().add(request)
+        checkAlarmIsLate(dueDate: items[index].dueDate, alarmDate: alarmDate)
     }
 
-    private func toggleCompletion(for id: UUID) {
-        guard let index = itemIndex(of: id) else { return }
-        if idsCompletedSoon.contains(id) {
-            idsCompletedSoon.remove(id)
-            items[index].completedAt = nil
+    private func checkAlarmIsLate(dueDate: Date?, alarmDate: Date) {
+        if let dueDate = dueDate, alarmDate > dueDate {
+            showAlert = true
+        }
+    }
+
+    private func setDueDate(for id: UUID, dueDate: Date) {
+        defer { sheetType = nil }
+
+        guard let index = items.firstIndex(where: { $0.id == id }) else {
+            return
+        }
+
+        items[index].dueDate = dueDate
+        if let alarmDate = items[index].alarmDate, alarmDate > dueDate {
+            showAlert = true
+        }
+    }
+
+    private func toggleDone(for id: UUID) {
+
+        guard let index = items.firstIndex(where: { $0.id == id }) else {
+            return
+        }
+
+        if idsDoneSoon.contains(id) {
+            idsDoneSoon.remove(id)
+            items[index].doneDate = nil
         } else {
-            idsCompletedSoon.insert(id)
-            items[index].completedAt = now
+            idsDoneSoon.insert(id)
+            items[index].doneDate = now
         }
-        reserveCompletion()
+        reserveDone()
     }
 
-    private func reserveCompletion() {
+    private func reserveDone() {
         timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { [weak self] _ in
             guard let self = self else { return }
             Task { @MainActor in
-                self.moveToCompletedItems(ids: self.idsCompletedSoon)
-                self.idsCompletedSoon.removeAll()
+                self.moveToDoneItems(ids: self.idsDoneSoon)
+                self.idsDoneSoon.removeAll()
             }
         }
     }
 
-    private func moveToCompletedItems(ids: Set<UUID>) {
-        let completed = items.filter { ids.contains($0.id) }
-        completedItems.append(contentsOf: completed)
+    private func moveToDoneItems(ids: Set<UUID>) {
+        let done = items.filter { ids.contains($0.id) }
+        doneItems.append(contentsOf: done)
         items.removeAll { ids.contains($0.id) }
     }
 
     private func remove(for id: UUID) {
-        guard let index = itemIndex(of: id) else { return }
+        guard let index = items.firstIndex(where: { $0.id == id }) else {
+            return
+        }
+
+        cancelAlarm(for: id)
         items.remove(at: index)
     }
 
-    private func cancel(for id: UUID) {
-        guard let index = itemIndex(of: id) else { return }
-        items[index].dayAfter = -1
+    private func cancelAlarm(for id: UUID) {
+        defer { sheetType = nil }
+
+        guard let index = items.firstIndex(where: { $0.id == id }) else {
+            return
+        }
+
+        items[index].alarmDate = nil
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [id.uuidString])
-        print("알림이 취소되었어요.")
     }
 
     private func removeDueDate(for id: UUID) {
-        guard let index = itemIndex(of: id) else { return }
+        defer { sheetType = nil }
+
+        guard let index = items.firstIndex(where: { $0.id == id }) else {
+            return
+        }
+
         items[index].dueDate = nil
+    }
+
+    private func moveExpiredAlarms() {
+        for index in items.indices {
+            if let alarmDate = items[index].alarmDate, alarmDate <= now {
+                alarmedItems.append(items[index])
+                items[index].alarmDate = nil
+            }
+        }
+    }
+
+    // MARK: - Action in FooterView
+
+    func append() {
+        items.append(.empty)
     }
 
     // MARK: - UserDefaults
 
     private func saveItems() {
         if let data = try? JSONEncoder().encode(items) {
-            UserDefaults.standard.set(data, forKey: key)
+            UserDefaults.standard.set(data, forKey: UserDefaultsKey.items)
         }
     }
 
-    private func saveCompletedItems() {
-        if let data = try? JSONEncoder().encode(completedItems) {
-            UserDefaults.standard.set(data, forKey: key2)
+    private func saveDoneItems() {
+        if let data = try? JSONEncoder().encode(doneItems) {
+            UserDefaults.standard.set(data, forKey: UserDefaultsKey.doneItems)
         }
     }
+
+    private func saveAlarmedItems() {
+        if let data = try? JSONEncoder().encode(alarmedItems) {
+            UserDefaults.standard.set(data, forKey: UserDefaultsKey.doneItems)
+        }
+    }
+
 
     private func load() {
-        guard let data = UserDefaults.standard.data(forKey: key),
+        guard let data = UserDefaults.standard.data(forKey: UserDefaultsKey.items),
               let savedItems = try? JSONDecoder().decode([ToDoItem].self, from: data) else {
             return
         }
         self.items = savedItems
 
-        guard let data = UserDefaults.standard.data(forKey: key2),
+        guard let data = UserDefaults.standard.data(forKey: UserDefaultsKey.doneItems),
               let savedItems = try? JSONDecoder().decode([ToDoItem].self, from: data) else {
             return
         }
-        self.completedItems = savedItems
+        self.doneItems = savedItems
+
+        guard let data = UserDefaults.standard.data(forKey: UserDefaultsKey.alarmedItems),
+              let savedItems = try? JSONDecoder().decode([ToDoItem].self, from: data) else {
+            return
+        }
+        self.alarmedItems = savedItems
     }
 
 }

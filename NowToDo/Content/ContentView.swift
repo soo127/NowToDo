@@ -16,9 +16,12 @@ struct ContentView: View {
 
             VStack {
 
-                ToDoCellView(items: $viewModel.items) {
-                    action in viewModel.handle(action: action)
-                }
+                ToDoContainer(
+                    items: $viewModel.items,
+                    showAlert: $viewModel.showAlert,
+                    sheetType: $viewModel.sheetType,
+                    action: viewModel.handle
+                )
                 FooterView()
                     .onTapGesture {
                         viewModel.append()
@@ -27,18 +30,16 @@ struct ContentView: View {
             }
             .navigationTitle(Text("미리 알림"))
             .toolbar {
-                MenuView(alignMode: $viewModel.alignMode) {
-                    action in viewModel.handle(action: action)
-                }
+                MenuView(alignMode: $viewModel.alignMode, action: viewModel.handle)
             }
 
         }
-        .fullScreenCover(isPresented: $viewModel.showCompleted) {
-            DoneCellView(completedItems: viewModel.completedItems) {
-                action in viewModel.handle(action : action)
+        .fullScreenCover(item: $viewModel.historyType) { type in
+            HistoryContainer(type: type, items: viewModel.items(type: type)) {
+                act in viewModel.handle(type: type, action: act)
             }
-
         }
+
     }
 
 }

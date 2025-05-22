@@ -19,9 +19,7 @@ struct NowToDoApp: App {
             }
         }
 
-      // Large Navigation Title
         UINavigationBar.appearance().largeTitleTextAttributes = [.foregroundColor: UIColor.orange]
-      // Inline Navigation Title
         UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor.black]
     }
     
