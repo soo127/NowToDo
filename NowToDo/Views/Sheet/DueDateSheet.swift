@@ -19,8 +19,9 @@ struct DueDateSheet: View {
             Text("마감 기한을 \(dueDate?.formatted() ?? Date().formatted())로 설정할게요.")
                 .font(.headline)
                 .padding()
-
             datePicker
+
+            Spacer()
 
             Button("설정 완료") {
                 onComplete(dueDate ?? Date())
@@ -31,6 +32,8 @@ struct DueDateSheet: View {
             Button("기한 지우기") {
                 cancel()
             }
+
+            Spacer()
         }
         .presentationDetents([.medium])
         

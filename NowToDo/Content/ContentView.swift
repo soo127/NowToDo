@@ -18,7 +18,7 @@ struct ContentView: View {
 
                 ToDoContainer(
                     items: $viewModel.items,
-                    showAlert: $viewModel.showAlert,
+                    alertType: $viewModel.alertType,
                     sheetType: $viewModel.sheetType,
                     action: viewModel.handle
                 )
@@ -39,6 +39,7 @@ struct ContentView: View {
                 act in viewModel.handle(type: type, action: act)
             }
         }
+        
 
     }
 
