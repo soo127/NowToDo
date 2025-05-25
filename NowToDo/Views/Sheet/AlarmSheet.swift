@@ -19,8 +19,9 @@ struct AlarmSheet: View {
             Text("언제 알림을 받을까요?")
                 .font(.headline)
                 .padding()
-
             datePicker
+
+            Spacer()
 
             Button("설정 완료") {
                 onComplete(alarmDate ?? Date())
@@ -31,6 +32,8 @@ struct AlarmSheet: View {
             Button("알림 지우기") {
                 cancel()
             }
+
+            Spacer()
         }
         .presentationDetents([.medium])
 

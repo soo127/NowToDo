@@ -30,9 +30,10 @@ class ContentViewModel: ObservableObject {
         }
     }
     @Published var showDoneCells: Bool = false
-    @Published var showAlert: Bool = false
     @Published var sheetType: SheetType? = nil
     @Published var historyType: HistoryType? = nil
+    @Published var alertType: AlertType? = nil
+
 
     private var timer: Timer?
     private var now: Date { Date() }
@@ -183,12 +184,32 @@ class ContentViewModel: ObservableObject {
     }
 
     private func notify(for id: UUID, alarmDate: Date) {
-        defer { sheetType = nil }
+        sheetType = nil
 
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            Task { @MainActor in
+                guard settings.authorizationStatus == .authorized else {
+                    self.alertType = .permissionDenied
+                    return
+                }
+
+                if self.isImpossibleAlarm(alarmDate: alarmDate) {
+                    self.alertType = .pastAlarm
+                    return
+                }
+                self.setNotification(for: id, alarmDate: alarmDate)
+            }
+        }
+    }
+
+    private func isImpossibleAlarm(alarmDate: Date) -> Bool {
+        return now >= alarmDate ? true : false
+    }
+
+    private func setNotification(for id: UUID, alarmDate: Date) {
         guard let index = items.firstIndex(where: { $0.id == id }) else {
             return
         }
-
         cancelAlarm(for: id)
         items[index].alarmDate = alarmDate
 
@@ -214,12 +235,12 @@ class ContentViewModel: ObservableObject {
 
     private func checkAlarmIsLate(dueDate: Date?, alarmDate: Date) {
         if let dueDate = dueDate, alarmDate > dueDate {
-            showAlert = true
+            alertType = .dueDatePassed
         }
     }
 
     private func setDueDate(for id: UUID, dueDate: Date) {
-        defer { sheetType = nil }
+        sheetType = nil
 
         guard let index = items.firstIndex(where: { $0.id == id }) else {
             return
@@ -227,12 +248,13 @@ class ContentViewModel: ObservableObject {
 
         items[index].dueDate = dueDate
         if let alarmDate = items[index].alarmDate, alarmDate > dueDate {
-            showAlert = true
+            Task { @MainActor in
+                alertType = .dueDatePassed
+            }
         }
     }
 
     private func toggleDone(for id: UUID) {
-
         guard let index = items.firstIndex(where: { $0.id == id }) else {
             return
         }
@@ -260,6 +282,9 @@ class ContentViewModel: ObservableObject {
 
     private func moveToDoneItems(ids: Set<UUID>) {
         let done = items.filter { ids.contains($0.id) }
+        ids.forEach { id in
+            cancelAlarm(for: id)
+        }
         doneItems.append(contentsOf: done)
         items.removeAll { ids.contains($0.id) }
     }
@@ -268,7 +293,6 @@ class ContentViewModel: ObservableObject {
         guard let index = items.firstIndex(where: { $0.id == id }) else {
             return
         }
-
         cancelAlarm(for: id)
         items.remove(at: index)
     }

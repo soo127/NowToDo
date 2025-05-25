@@ -9,7 +9,7 @@ import SwiftUI
 struct ToDoContainer: View {
 
     @Binding var items: [ToDoItem]
-    @Binding var showAlert: Bool
+    @Binding var alertType: AlertType?
     @Binding var sheetType: SheetType?
     let action: (ToDoContainerAction) -> Void
     
@@ -32,13 +32,16 @@ struct ToDoContainer: View {
             }
         }
         .listStyle(.plain)
-        .alert("해당 ToDo는 마감 이후 알람이 울립니다.", isPresented: $showAlert) {
-            Button("확인", role: .cancel) { }
-        }
         .sheet(item: $sheetType) { sheetType in
             SheetPresenter(sheetType: sheetType, items: items, action: action)
         }
+        .alert(item: $alertType) { type in
+            Alert(title: Text(type.message), dismissButton: .default(Text("확인")))
+        }
         .onAppear {
+            action(.moveExpiredAlarms)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
             action(.moveExpiredAlarms)
         }
     }
