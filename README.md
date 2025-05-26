@@ -41,9 +41,9 @@
 <img width="300" alt="스크린샷 2025-05-26 오후 4 40 03" src="https://github.com/user-attachments/assets/78e37275-6828-4693-93fc-78eb6b58e469" />
 <p></p>
 
-  <img width="300" alt="스크린샷 2025-05-26 오후 4 16 49" src="https://github.com/user-attachments/assets/86f736a1-dea0-4f25-aeb5-7787d526b897" />
-  <img width="300" alt="스크린샷 2025-05-26 오후 4 17 10" src="https://github.com/user-attachments/assets/74b29716-373b-4cc0-a932-5bc2d2284f1e" />
-  <img src="https://github.com/user-attachments/assets/e0c9e412-206e-493f-9c02-5108c05f5df9" width="300" alt="할 일 추가, 완료">
+  <img width="200" alt="스크린샷 2025-05-26 오후 4 16 49" src="https://github.com/user-attachments/assets/86f736a1-dea0-4f25-aeb5-7787d526b897" />
+  <img width="200" alt="스크린샷 2025-05-26 오후 4 17 10" src="https://github.com/user-attachments/assets/74b29716-373b-4cc0-a932-5bc2d2284f1e" />
+  <img src="https://github.com/user-attachments/assets/e0c9e412-206e-493f-9c02-5108c05f5df9" width="200" alt="할 일 추가, 완료">
 
   #### 삭제
   - ToDo 셀을 끝까지 밀면 ToDo가 삭제됩니다.
@@ -59,10 +59,11 @@
 - 울린 알림과 완료된 항목을 볼 수 있습니다.
 - 앱에 들어오면 울린 알림 항목이 업데이트 됩니다.
 - '삭제'를 클릭하면, 확인 후 버튼이 눌린 일들을 삭제합니다.
-<img width="300" alt="스크린샷 2025-05-26 오후 5 31 17" src="https://github.com/user-attachments/assets/add36c02-da13-461f-93f6-9415cc3f51da" />
-<img width="300" alt="스크린샷 2025-05-26 오후 4 56 57" src="https://github.com/user-attachments/assets/ee57f803-53ff-4a25-a65c-5312200ac9e9" />
-
 - ToDo를 먼저 추가한 순(기본), 마감이 빠른 순 중 선택하여 정렬합니다.
 - 현재 정렬 방식에 체크마크가 표시됩니다.
 - 마감일 정렬의 경우, 마감일이 없는 ToDo는 뒤로 밀리며 먼저 추가한 순으로 배치됩니다.
-<img width="300" alt="스크린샷 2025-05-26 오후 4 56 57" src="https://github.com/user-attachments/assets/26111615-f4b2-488e-8c5a-351bbdee3cbe" />
+<img width="200" alt="스크린샷 2025-05-26 오후 5 31 17" src="https://github.com/user-attachments/assets/add36c02-da13-461f-93f6-9415cc3f51da" />
+<img width="200" alt="스크린샷 2025-05-26 오후 4 56 57" src="https://github.com/user-attachments/assets/ee57f803-53ff-4a25-a65c-5312200ac9e9" />
+<img width="200" alt="스크린샷 2025-05-26 오후 4 56 57" src="https://github.com/user-attachments/assets/26111615-f4b2-488e-8c5a-351bbdee3cbe" />
+
+.
