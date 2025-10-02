@@ -11,11 +11,8 @@ struct ContentView: View {
     @StateObject private var viewModel = ContentViewModel()
 
     var body: some View {
-
         NavigationStack {
-
             VStack {
-
                 ToDoContainer(
                     items: $viewModel.items,
                     alertType: $viewModel.alertType,
@@ -26,21 +23,17 @@ struct ContentView: View {
                     .onTapGesture {
                         viewModel.append()
                     }
-
             }
             .navigationTitle(Text("미리 알림"))
             .toolbar {
                 MenuView(alignMode: $viewModel.alignMode, action: viewModel.handle)
             }
-
         }
         .fullScreenCover(item: $viewModel.historyType) { type in
             HistoryContainer(type: type, items: viewModel.items(type: type)) {
                 act in viewModel.handle(type: type, action: act)
             }
         }
-        
-
     }
 
 }

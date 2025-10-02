@@ -14,9 +14,7 @@ struct DoneContainer: View {
     let action: (HistoryContainerAction) -> Void
 
     var body: some View {
-
         NavigationStack {
-
             VStack {
                 container
                 deleteButton
@@ -25,9 +23,7 @@ struct DoneContainer: View {
             .toolbar {
                 closeButton
             }
-
         }
-
     }
 
     private var container: some View {

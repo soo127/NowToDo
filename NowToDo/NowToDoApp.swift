@@ -12,10 +12,7 @@ import UserNotifications
 struct NowToDoApp: App {
 
     init() {
-
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
-
-
         UINavigationBar.appearance().largeTitleTextAttributes = [.foregroundColor: UIColor.orange]
         UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor.black]
     }

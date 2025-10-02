@@ -13,7 +13,6 @@ struct CheckButton: View {
     var action: () -> Void
 
     var body: some View {
-
         Button {
             clicked.toggle()
             action()
@@ -36,7 +35,6 @@ struct CheckButton: View {
 
         }
         .buttonStyle(PlainButtonStyle())
-
     }
 
 }

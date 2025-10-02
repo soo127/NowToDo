@@ -13,9 +13,7 @@ struct MenuView: View {
     let action: (MenuType) -> Void
 
     var body: some View {
-
         Menu {
-
             Button("울린 알림 보기") {
                 action(.showSoundedAlarms)
             }
@@ -28,11 +26,9 @@ struct MenuView: View {
                 creationDateButton
                 dueDateButton
             }
-
         } label: {
             Image(systemName: "ellipsis.circle")
         }
-
     }
 
     private var creationDateButton: some View {

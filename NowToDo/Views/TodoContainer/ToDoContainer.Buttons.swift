@@ -52,13 +52,12 @@ extension ToDoContainer {
                 alarmDate == nil ? Image(systemName: "bell.slash") : Image(systemName: "bell.and.waves.left.and.right")
             }
             .tint(.blue)
-            
 
         }
     }
 
     struct DateButton: View {
-
+        
         @Binding var sheetType: SheetType?
         let item: ToDoItem
         let action: (ToDoContainerAction) -> Void
@@ -72,7 +71,7 @@ extension ToDoContainer {
             }
             .tint(dueDate == nil ? .gray : .green)
         }
-
+        
     }
 
 }

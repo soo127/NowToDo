@@ -15,9 +15,7 @@ struct ToDoCell: View {
     let clickAction: () -> Void
 
     var body: some View {
-
         HStack(alignment: .top) {
-
             CheckButton(clicked: $clicked, action: clickAction)
 
             // 기본 구분선의 왼쪽 여백을 주기 위해 추가함
@@ -28,10 +26,8 @@ struct ToDoCell: View {
                 todoTextField
                 dDayText
             }
-
         }
         .listRowSeparator(.visible)
-
     }
 
     private var todoTextField: some View {

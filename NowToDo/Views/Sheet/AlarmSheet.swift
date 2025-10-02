@@ -14,7 +14,6 @@ struct AlarmSheet: View {
     let cancel: () -> Void
 
     var body: some View {
-
         VStack {
             Text("언제 알림을 받을까요?")
                 .font(.headline)
@@ -36,7 +35,6 @@ struct AlarmSheet: View {
             Spacer()
         }
         .presentationDetents([.medium])
-
     }
 
     private var datePicker: some View {

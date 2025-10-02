@@ -187,19 +187,19 @@ class ContentViewModel: ObservableObject {
         sheetType = nil
 
         UNUserNotificationCenter.current().getNotificationSettings { settings in
-            Task { @MainActor in
-                guard settings.authorizationStatus == .authorized else {
-                    self.alertType = .permissionDenied
-                    return
-                }
-
-                if self.isImpossibleAlarm(alarmDate: alarmDate) {
-                    self.alertType = .pastAlarm
-                    return
-                }
-                self.setNotification(for: id, alarmDate: alarmDate)
+            
+            guard settings.authorizationStatus == .authorized else {
+                self.alertType = .permissionDenied
+                return
             }
+            
+            if self.isImpossibleAlarm(alarmDate: alarmDate) {
+                self.alertType = .pastAlarm
+                return
+            }
+            self.setNotification(for: id, alarmDate: alarmDate)
         }
+        
     }
 
     private func isImpossibleAlarm(alarmDate: Date) -> Bool {
@@ -248,9 +248,7 @@ class ContentViewModel: ObservableObject {
 
         items[index].dueDate = dueDate
         if let alarmDate = items[index].alarmDate, alarmDate > dueDate {
-            Task { @MainActor in
-                alertType = .dueDatePassed
-            }
+            alertType = .dueDatePassed
         }
     }
 

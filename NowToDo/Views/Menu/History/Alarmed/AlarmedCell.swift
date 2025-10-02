@@ -15,29 +15,22 @@ struct AlarmedCell: View {
     var onClick: () -> Void
 
     var body: some View {
-
         VStack(alignment: .leading) {
-
             HStack(alignment: .top) {
-
                 CheckButton(clicked: $clicked, action: onClick)
-
+                
                 Text(text)
                     .foregroundStyle(.gray)
-
+                
                 Spacer()
-
+                
                 Text(alarmedDate.formatted())
                     .foregroundStyle(.gray)
-
             }
             .padding(.vertical, 5)
-
             Divider()
-
         }
         .padding(.horizontal)
-
     }
 
 }

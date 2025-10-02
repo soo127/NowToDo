@@ -14,7 +14,6 @@ struct SheetPresenter: View {
     let action: (ToDoContainerAction) -> Void
 
     var body: some View {
-
         switch sheetType {
 
         case .detail(let id):
@@ -33,7 +32,6 @@ struct SheetPresenter: View {
             }
 
         }
-
     }
 
     private func alarmDate(_ id: UUID) -> Date? {
@@ -43,4 +41,5 @@ struct SheetPresenter: View {
     private func dueDate(_ id: UUID) -> Date? {
         return items.first(where: { $0.id == id })?.dueDate
     }
+    
 }

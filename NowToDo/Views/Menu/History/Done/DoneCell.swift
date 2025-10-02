@@ -15,11 +15,8 @@ struct DoneCell: View {
     var onClick: () -> Void
 
     var body: some View {
-
         VStack(alignment: .leading) {
-
             HStack(alignment: .top) {
-
                 CheckButton(clicked: $clicked, action: onClick)
 
                 Text(text)
@@ -29,15 +26,11 @@ struct DoneCell: View {
 
                 Text(doneDate.formatted())
                     .foregroundStyle(.gray)
-
             }
             .padding(.vertical, 5)
-
             Divider()
-
         }
         .padding(.horizontal)
-
     }
 
 }

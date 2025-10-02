@@ -20,6 +20,6 @@ struct HistoryContainer: View {
         case .done:
             DoneContainer(items: items, action: action)
         }
-
     }
+    
 }

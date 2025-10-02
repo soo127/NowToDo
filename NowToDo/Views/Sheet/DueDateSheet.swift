@@ -14,7 +14,6 @@ struct DueDateSheet: View {
     let cancel: () -> Void
     
     var body: some View {
-
         VStack {
             Text("마감 기한을 \(dueDate?.formatted() ?? Date().formatted())로 설정할게요.")
                 .font(.headline)
@@ -36,7 +35,6 @@ struct DueDateSheet: View {
             Spacer()
         }
         .presentationDetents([.medium])
-        
     }
 
     private var datePicker: some View {

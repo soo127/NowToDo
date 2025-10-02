@@ -13,13 +13,11 @@ struct DetailSheet: View {
     let dueDate: Date?
 
     var body: some View {
-
         VStack {
             Label(alarmDate?.formatted() ?? "X", systemImage: "bell")
             Label(dueDate?.formatted() ?? "X", systemImage: "calendar")
         }
         .presentationDetents([.medium])
-
     }
 
 }
